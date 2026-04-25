@@ -1,10 +1,9 @@
-require('dotenv').config();
-
 module.exports = {
   apps: [
     {
       name: 'collab-frontend',
-      script: 'npx next start',
+      script: './node_modules/.bin/next',
+      args: 'start',
       cwd: __dirname,
       instances: 1,
       autorestart: true,
