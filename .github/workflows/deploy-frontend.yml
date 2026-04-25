@@ -21,7 +21,9 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             export PATH="$NVM_DIR/versions/node/v24.15.0/bin:$PATH"
-            cd ${{ secrets.EC2_FRONTEND_DIR }}
+            cd ${{ secrets.EC2_FRONTEND_DIR }} || (pwd && ls -la && echo "Directory not found or not a git repo" && exit 1)
+            pwd
+            ls -la
             git pull origin main
             npm install
             npm run build
