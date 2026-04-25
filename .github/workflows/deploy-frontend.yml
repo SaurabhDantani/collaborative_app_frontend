@@ -21,9 +21,23 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             export PATH="$NVM_DIR/versions/node/v24.15.0/bin:$PATH"
-            cd ${{ secrets.EC2_FRONTEND_DIR }} || (pwd && ls -la && echo "Directory not found or not a git repo" && exit 1)
+            echo "EC2_FRONTEND_DIR=${{ secrets.EC2_FRONTEND_DIR }}"
+            if [ -z "${{ secrets.EC2_FRONTEND_DIR }}" ]; then
+              echo "EC2_FRONTEND_DIR is not set"
+              exit 1
+            fi
+            if [ ! -d "${{ secrets.EC2_FRONTEND_DIR }}" ]; then
+              echo "Directory does not exist: ${{ secrets.EC2_FRONTEND_DIR }}"
+              ls -la "$HOME"
+              exit 1
+            fi
+            cd "${{ secrets.EC2_FRONTEND_DIR }}"
             pwd
             ls -la
+            if [ ! -f package.json ]; then
+              echo "package.json not found in $(pwd)"
+              exit 1
+            fi
             git pull origin main
             npm install
             npm run build
