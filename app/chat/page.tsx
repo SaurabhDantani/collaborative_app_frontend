@@ -21,7 +21,7 @@ interface ActivityEvent {
   type: 'system' | 'message' | 'editor';
 }
 
-const SESSION_STORAGE_KEY = 'lumina-chat-session';
+export const SESSION_STORAGE_KEY = 'lumina-chat-session';
 
 export default function ChatPage() {
   const { user, loading } = useAuth();

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input } from '@/components/ui';
 import { SessionUser } from '@/services/session';
+import { SESSION_STORAGE_KEY } from '@/app/chat/page';
 
 interface ActivityEvent {
   id: string;
@@ -40,13 +41,30 @@ export const SessionPanel = ({
 }: Props) => {
   const [sessionInput, setSessionInput] = useState('');
   const [editorDraft, setEditorDraft] = useState(editorContent);
+  const [copied, setCopied] = useState(false);
+
+  const displayedSessionId = sessionId || localStorage.getItem(SESSION_STORAGE_KEY) || '';
 
   useEffect(() => {
     setEditorDraft(editorContent);
   }, [editorContent]);
 
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 1500);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
   const handleCreate = () => {
     onCreateSession(userName);
+  };
+
+  const handleCopySessionId = () => {
+    if (!displayedSessionId) return;
+
+    navigator.clipboard.writeText(displayedSessionId).then(() => {
+      setCopied(true);
+    });
   };
 
   const handleJoin = () => {
@@ -90,6 +108,14 @@ export const SessionPanel = ({
               <p className="text-sm font-semibold text-white">Participants</p>
               <p className="text-xs text-slate-500">
                 {sessionUsers.length ? `${sessionUsers.length} participant${sessionUsers.length === 1 ? '' : 's'}` : 'No participants yet'}
+              </p>
+              <p
+                className={`text-xs ${displayedSessionId ? 'cursor-pointer text-slate-500 hover:text-white' : 'text-slate-500'}`}
+                onClick={displayedSessionId ? handleCopySessionId : undefined}
+                title={displayedSessionId ? 'Click to copy session ID' : undefined}
+              >
+                Copy ID
+                {copied && displayedSessionId ? ' · Copied!' : ''}
               </p>
             </div>
             <div className="mt-4 space-y-3 max-h-52 overflow-y-auto pr-2">
